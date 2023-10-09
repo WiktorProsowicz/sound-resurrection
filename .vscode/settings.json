@@ -1,0 +1,26 @@
+{
+    // Settings refer to vscode extensions that can be installed with:
+    //
+    // code --install-extension cstrap.python-snippets
+    // code --install-extension littlefoxteam.vscode-python-test-adapter
+    // code --install-extension ms-python.black-formatter
+    // code --install-extension ms-python.isort
+    // code --install-extension ms-python.pylint
+    // code --install-extension ms-python.python
+    // code --install-extension ms-python.vscode-pylance
+    // code --install-extension njpwerner.autodocstring
+    // code --install-extension njqdev.vscode-python-typehint
+    // code --install-extension streetsidesoftware.code-spell-checker
+    //
+    "workspace.searchEnabled": true,
+    "autoDocstring.docstringFormat": "google",
+    "autoDocstring.startOnNewLine": false,
+    "pylint.importStrategy": "fromEnvironment",
+    "pylint.interpreter": [
+        "${workspaceFolder}/venv/bin/python3"
+    ],
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnPaste": true
+    }
+}
