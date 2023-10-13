@@ -38,9 +38,11 @@
 - Główna inspiracja w kwestii architektury pochodzi z badań w temacie Image Completion, w szczególności model Co-Modulated GAN, ze względu na jego różnorodność generowania oraz zgodność z inputem.
 - Model dostosowany do tematu dźwięku z możliwym użyciem warstw rekurencyjnych zamiast konwolucyjnych. 
 - Preferowane metryki zgodne z human-evaluation, główna inspiracja: *PAIRED/UNPAIRED INCEPTION DISCRIMINATIVE SCORE*
+- Kod modelu napisany w Tensorflow
+- Obróbka i zapis/odczyt dźwięku z użyciem biblioteki librosa
 
 ## Wstępny harmonogram
-| Data       | Działanie                    | Opis     |
+| Data rozpoczęcia      | Działanie                    | Opis     |
 |------------|------------------------------|-------------------------------|
 |2023-10-6 | Literatura | Przygotowanie potrzebnych artykułów i studiowanie wiedzy
 | 2023-10-20| Zbieranie i przygotowanie  danych   | Surowe próbki dźwiękowe z konferencji, konwersja do formy spektrogramu |
