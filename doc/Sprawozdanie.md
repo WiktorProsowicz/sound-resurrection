@@ -45,7 +45,7 @@
 |2023-10-6 | Literatura | Przygotowanie potrzebnych artykułów i studiowanie wiedzy
 | 2023-10-20| Zbieranie i przygotowanie  danych   | Surowe próbki dźwiękowe z konferencji, konwersja do formy spektrogramu |
 | 2023-11-03 | Prototypy modeli  | Implementacja modeli GAN, eksperymenty z architekturą |
-| 2023-11-10 | Uczenie modeli goraz romadzenie metryk | Trening modeli na dostępnych danych,| 2024--15 | Gromadzenie metryk  | Ocena jakości generowanych próbek, różnorodność |
+| 2023-11-10 | Uczenie modeli goraz romadzenie metryk | Trening modeli na dostępnych danych, ocena jakości generowanych próbek|
 | 2023-12-15 | Optymalizacja i ewaluacja | Doskonalenie modeli i metodyki, ocena wyników |
 
 
