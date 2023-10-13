@@ -39,6 +39,16 @@
 - Model dostosowany do tematu dźwięku z możliwym użyciem warstw rekurencyjnych zamiast konwolucyjnych. 
 - Preferowane metryki zgodne z human-evaluation, główna inspiracja: *PAIRED/UNPAIRED INCEPTION DISCRIMINATIVE SCORE*
 
+## Wstępny harmonogram
+| Data       | Działanie                    | Opis     |
+|------------|------------------------------|-------------------------------|
+|2023-10-6 | Literatura | Przygotowanie potrzebnych artykułów i studiowanie wiedzy
+| 2023-10-20| Zbieranie i przygotowanie  danych   | Surowe próbki dźwiękowe z konferencji, konwersja do formy spektrogramu |
+| 2023-11-03 | Prototypy modeli  | Implementacja modeli GAN, eksperymenty z architekturą |
+| 2023-11-10 | Uczenie modeli goraz romadzenie metryk | Trening modeli na dostępnych danych,| 2024--15 | Gromadzenie metryk  | Ocena jakości generowanych próbek, różnorodność |
+| 2023-12-15 | Optymalizacja i ewaluacja | Doskonalenie modeli i metodyki, ocena wyników |
+
+
 ## Wstępny spis źródeł
 
 -  ["MelNet: A Generative Model for Audio in the Frequency Domain"](https://arxiv.org/abs/1906.01083) - Sean Vasquez, Mike Lewis
