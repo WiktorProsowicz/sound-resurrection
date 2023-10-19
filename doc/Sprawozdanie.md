@@ -59,3 +59,46 @@
 -  ["A Literature Review of WaveNet: Theory, Application and Optimization"](https://www.researchgate.net/publication/333135603_A_Literature_Review_of_WaveNet_Theory_Application_and_Optimization)- Jonathan Boilard et al.
 -  ["A Style-Based Generator Architecture for Generative Adversarial Networks"](https://arxiv.org/abs/1812.04948)- Tero Karra et al.
 -  ["Progressive Growing of GANs for Improved Quality, Stability, and Variation"](https://arxiv.org/abs/1710.10196)- Tero Karra et al.
+
+# Analiza najnowszych rozwiązań problemu
+
+## Uzupełnianie dźwięku
+
+### Conditional GAN
+![Conditional GAN](./res/ConditionalGAN.jpeg)
+
+- Na generowanie treści wpływa wektor modulujący, utworzony z inputu
+- Architektura nadaje się do tematu Image Completion
+- Zbieżność ze stylem/treścią danych na wejściu
+- Słabe zdolności generacyjne
+- Wady architektury widoczne w momencie, gdy zakryty obszar na wyjściowych danych (obraz, spektrogram) jest duży i/lub nieregularny
+
+### Co-Modulated GAN
+![Co-Modulated GAN](./res/CoModulatedGAN.png)
+
+- Wektor determinujący generowaną treść jest połączeniem dwóch wektorów:
+    - Zmapowany wektor wysamplowany z losowego rozkładu (odpowiednika losowanego latent space'u w VAE)
+    - Zakodowany obraz wejściowy
+- Architektura bierze pod uwagę zarówno wygląd obrazu wejściowego jak i "bogactwo" generacji
+
+## Upsampling
+
+### Architektura typu downsample->upsample
+
+![Architektura bottleneck](./res/BottleneckArchitecture.png)
+
+- Architektura niesymetryczna (input o mniejszej rozdzielczości niż output)
+- Wejście w time-domain
+- Podczas treningu wykorzystywane są sztucznie pogorszone fragmenty dźwięku
+- "Order 8 Chebyshev type I low-pass filter" + downsampling
+- Połączenia rezydualne między poszczególnymi warstwami w hierarchii znacząco poprawiają jakość uczenia
+
+### Generacja wysokich częstotliwości z niskich
+
+![Generacja wysokich częstotliwości](./res/FrequencyRestoration.png)
+
+- Wejściowy dźwięk o obniżonej częstotliwości "przechodzi" przez warstwy konwolucyjne 1D
+- Bez wykorzystania auto-regresji model rozszerza sample dźwiękowe i pozwala na ekstrakcję wyższych częstotliwości
+- Architektura ma potencjał do przewyższenia innych używanych technik, używających interpolacji bez wykorzystania ML
+
+## Denoising
