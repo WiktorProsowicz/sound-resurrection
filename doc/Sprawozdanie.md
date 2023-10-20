@@ -102,3 +102,19 @@
 - Architektura ma potencjał do przewyższenia innych używanych technik, używających interpolacji bez wykorzystania ML
 
 ## Denoising
+
+### Klasyczne podejście do WaveNet
+
+![Klasyczny WaveNet](./res/ClassicWaveNet.png)
+
+- Sample generowane na podstawie poprzednich wartości
+- Połączenia rezydualne
+- Kwantyzacja outputu (mu-law)
+- Dilated convolutions 1D
+
+### WaveNet po usunięciu Causality
+
+![Nowy WaveNet](./res/NotAutoRegressiveWaveNet.png)
+
+- Symetryczne wpływanie na sample w nowej warstwie
+- Brak kwantyzacji z powodu zbyt dużego wzmocnienia szumu w outpucie
