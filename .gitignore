@@ -1,1 +1,6 @@
 venv
+.vscode
+.mypy_cache
+.pytest_cache
+test_results
+**/__pycache__
