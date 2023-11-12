@@ -1,0 +1,20 @@
+# -------------------------------------------------------------------------------------
+# This is a file containing rules for the overall files' structure.
+# The rules specified below are used by the EditorConfig tool which
+# tries to adjust the files' format to make it consistent throughout the whole project.
+#
+# To use the EditorConfig one should install a proper IDE plugin e.g.:
+#   code --install-extension EditorConfig.EditorConfig
+# -------------------------------------------------------------------------------------
+
+root = true
+
+[*]
+end_of_line = lf
+trim_trailing_whitespace = true
+
+[*.py]
+indent_style = space
+tab_width = 4
+insert_final_newline = true
+charset = utf-8
