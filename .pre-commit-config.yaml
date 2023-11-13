@@ -63,6 +63,8 @@ repos:
           - "--ignore-paths=tests/*"
           - "--disable=missing-function-docstring"
           - "--disable=missing-module-docstring"
+          - "--disable=fixme"
+          - "--disable=too-few-public-methods"
 
   # Checks whether the python import statements are properly sorted
   - repo: https://github.com/asottile/reorder-python-imports
