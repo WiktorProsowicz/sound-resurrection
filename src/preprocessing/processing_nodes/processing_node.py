@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Module contains declarations of interfaces for pre-processors."""
-
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
 
 from preprocessing import audio_signal
 
@@ -27,7 +27,8 @@ class ProcessingNode(ABC):
 
         self._allow_backward = allow_backward_processing
 
-    def process(self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
+    def process(
+            self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
         """Processes a given audio signal.
 
         Applied transformations depend of the concrete subclass.
@@ -48,7 +49,8 @@ class ProcessingNode(ABC):
 
         return self._apply_transformations(signal)
 
-    def process_backwards(self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
+    def process_backwards(
+            self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
         """Processes a given audio signal in reverse direction.
 
         The reverse processing shall be often possible only if the signal has been processed
@@ -67,7 +69,7 @@ class ProcessingNode(ABC):
 
         if not self._allow_backward:
             raise AudioProcessingError(
-                f"Reverse processing in this instance of {self.signature} not supported!")
+                f'Reverse processing in this instance of {self.signature} not supported!')
 
         return self._transform_backwards(signal)
 
@@ -77,7 +79,8 @@ class ProcessingNode(ABC):
         """Returns a string signature of the concrete instance of the abstract class."""
 
     @abstractmethod
-    def _apply_transformations(self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
+    def _apply_transformations(
+            self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
         """Applies transformations to an audio signal.
 
         Args:
@@ -91,7 +94,8 @@ class ProcessingNode(ABC):
         """
 
     @abstractmethod
-    def _transform_backwards(self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
+    def _transform_backwards(
+            self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
         """Applies reverse transformations to an audio signal.
 
         Args:

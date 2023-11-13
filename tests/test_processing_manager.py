@@ -1,10 +1,9 @@
+# -*- coding: utf-8 -*-
 import os
 
-import pytest
-
+from preprocessing import audio_signal
 from preprocessing import preprocessing_manager
 from preprocessing.processing_nodes import processing_node
-from preprocessing import audio_signal
 
 
 class MockPreprocessor(processing_node.ProcessingNode):
@@ -13,13 +12,16 @@ class MockPreprocessor(processing_node.ProcessingNode):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    @property
     def signature(self) -> str:
-        return "TestPreprocessor"
+        return 'TestPreprocessor'
 
-    def _apply_transformations(self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
+    def _apply_transformations(
+            self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
         return signal
 
-    def _transform_backwards(self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
+    def _transform_backwards(
+            self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
         return signal
 
     def _store_processing_info(self, signal: audio_signal.AudioSignal):
@@ -30,12 +32,12 @@ def test_valid_processing():
     """Runs processing and checks the outputs."""
 
     input_path = os.path.join(
-        os.environ["TEST_RESOURCES"], "preprocessing_inputs")
+        os.environ['TEST_RESOURCES'], 'preprocessing_inputs')
 
     output_path = os.path.join(
-        os.environ["TEST_RESULTS"], "preprocessing_outputs")
+        os.environ['TEST_RESULTS'], 'preprocessing_outputs')
 
-    params = preprocessing_manager.ManagerParams(
-        input_path, output_path, [MockPreprocessor()], True, "*.wav")
+    # params = preprocessing_manager.ManagerParams(
+    #     input_path, output_path, [MockPreprocessor()], True, '*.wav')
 
     # TODO: Implement test.

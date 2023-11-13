@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 """Contains a class responsible for managing the offline preprocessing."""
-
 import dataclasses
-import os
 import logging
-from typing import List, Optional, Generator
+import os
+from typing import List
+from typing import Optional
 
 from preprocessing.processing_nodes import processing_node
 
@@ -51,4 +52,4 @@ class PreprocessingManager:
         # TODO: Implement processing algorithm.
 
     def _is_path_valid(self, path: str) -> bool:
-        return os.path.exists([path]) and os.path.isdir(path)
+        return os.path.exists(path) and os.path.isdir(path)

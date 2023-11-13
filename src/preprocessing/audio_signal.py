@@ -1,5 +1,5 @@
+# -*- coding: utf-8 -*-
 """Module contains definition of class representing a single audio signal."""
-
 import dataclasses
 
 import numpy as np
@@ -69,11 +69,11 @@ class AudioSignal:
 
         if data.ndim != 2:
             raise ValueError(
-                "The signal samples should be of the shape (channels, samples)!")
+                'The signal samples should be of the shape (channels, samples)!')
 
         if data.shape[0] != meta.channels:
             raise ValueError(
-                "The number of signal channels does not equal the declared one!")
+                'The number of signal channels does not equal the declared one!')
 
         if data.itemsize * 8 > meta.bits_per_sample:
             raise ValueError(
@@ -81,4 +81,4 @@ class AudioSignal:
                 underlying type's size!")
 
         if meta.sampling_rate <= 0:
-            raise ValueError("The sampling rate should be positive!")
+            raise ValueError('The sampling rate should be positive!')
