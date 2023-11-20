@@ -5,7 +5,7 @@ import dataclasses
 import numpy as np
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(eq=True)
 class AudioMeta:
     """Contains information about an audio signal."""
 
@@ -75,9 +75,9 @@ class AudioSignal:
             raise ValueError(
                 'The number of signal channels does not equal the declared one!')
 
-        if data.itemsize * 8 > meta.bits_per_sample:
+        if data.itemsize * 8 < meta.bits_per_sample:
             raise ValueError(
-                "The declared number of bits per sample is smaller than the data's  \
+                "The declared number of bits per sample is higher than the data's  \
                 underlying type's size!")
 
         if meta.sampling_rate <= 0:
