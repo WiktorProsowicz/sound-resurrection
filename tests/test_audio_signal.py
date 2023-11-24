@@ -11,8 +11,8 @@ VALID_AUDIO_RESOURCES = [
 ]
 
 
-@pytest.mark.dependency(name="test_making_a_valid_signal")
-@pytest.mark.parametrize("meta_data,samples", VALID_AUDIO_RESOURCES)
+@pytest.mark.dependency(name='test_making_a_valid_signal')
+@pytest.mark.parametrize('meta_data,samples', VALID_AUDIO_RESOURCES)
 def test_making_a_valid_signal(meta_data, samples):
 
     signal = audio_signal.AudioSignal(samples, meta_data)
@@ -30,7 +30,7 @@ def test_making_audio_signal_with_wrong_dimensionality():
     audio_signal.AudioSignal(data, meta_data)
 
 
-@pytest.mark.dependency(depends=["test_making_a_valid_signal"])
+@pytest.mark.dependency(depends=['test_making_a_valid_signal'])
 def test_length_property_of_audio_signal():
 
     meta_data = audio_signal.AudioMeta(100, 1, 8)
@@ -46,15 +46,6 @@ def test_making_signal_with_incompatible_channels_info():
 
     meta_data = audio_signal.AudioMeta(100, 5, 8)
     data = np.ndarray(shape=(1, 200), dtype=np.uint8)
-
-    audio_signal.AudioSignal(data, meta_data)
-
-
-@pytest.mark.xfail(raises=ValueError)
-def test_making_signal_with_data_type_other_than_declared():
-
-    meta_data = audio_signal.AudioMeta(100, 2, 16)
-    data = np.ndarray(shape=(2, 200), dtype=np.uint8)
 
     audio_signal.AudioSignal(data, meta_data)
 

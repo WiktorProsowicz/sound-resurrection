@@ -75,10 +75,5 @@ class AudioSignal:
             raise ValueError(
                 'The number of signal channels does not equal the declared one!')
 
-        if data.itemsize * 8 < meta.bits_per_sample:
-            raise ValueError(
-                "The declared number of bits per sample is higher than the data's  \
-                underlying type's size!")
-
         if meta.sampling_rate <= 0:
             raise ValueError('The sampling rate should be positive!')
