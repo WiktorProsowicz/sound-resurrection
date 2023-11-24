@@ -17,7 +17,7 @@ class ProcessingNode(ABC):
     various kinds of signal processing.
     """
 
-    def __init__(self, allow_backward_processing: bool = True):
+    def __init__(self, allow_backward_processing: bool):
         """Initializes the common processor fields.
 
         Args:
@@ -27,6 +27,7 @@ class ProcessingNode(ABC):
 
         self._allow_backward = allow_backward_processing
 
+    @abstractmethod
     def process(
             self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
         """Processes a given audio signal.
@@ -43,11 +44,6 @@ class ProcessingNode(ABC):
             AudioProcessingError: If there processor encountered any problems
             while applying the transformations.
         """
-
-        if self._allow_backward:
-            self._store_processing_info(signal)
-
-        return self._apply_transformations(signal)
 
     def process_backwards(
             self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
@@ -80,11 +76,13 @@ class ProcessingNode(ABC):
 
     @abstractmethod
     def _apply_transformations(
-            self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
+            self, signal: audio_signal.AudioSignal, *args, **kwargs) -> audio_signal.AudioSignal:
         """Applies transformations to an audio signal.
 
         Args:
             signal: Audio signal to be processed.
+            *args: Variable length arguments, specific to a concrete processor.
+            **kwargs: Keyword arguments, specific to a concrete processor.
 
         Returns:
             Processed signal.
@@ -109,9 +107,12 @@ class ProcessingNode(ABC):
         """
 
     @abstractmethod
-    def _store_processing_info(self, signal: audio_signal.AudioSignal):
+    def _store_processing_info(
+            self, signal: audio_signal.AudioSignal, *args, **kwargs):
         """Stores necessary info needed to perform a backward processing.
 
         Args:
             signal: Audio signal to store the associated info for.
+            *args: Variable length arguments, specific to a concrete processor.
+            **kwargs: Keyword arguments, specific to a concrete processor.
         """
