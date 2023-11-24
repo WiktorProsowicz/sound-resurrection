@@ -2,6 +2,7 @@
 """Module contains declarations of interfaces for pre-processors."""
 from abc import ABC
 from abc import abstractmethod
+from typing import Dict
 
 from preprocessing import audio_signal
 
@@ -26,6 +27,23 @@ class ProcessingNode(ABC):
         """
 
         self._allow_backward = allow_backward_processing
+
+    @classmethod
+    @abstractmethod
+    def from_config(cls, config: Dict[str, any]):
+        """Spawns a processing node from provided configuration.
+
+        Interpretation of the configuration depends on the concrete subclass
+        and the validation is implementation-defined.
+
+        Args:
+            config: Configuration dictionary.
+                See: scripts/config/preprocessing_config.yaml for specification
+                of allowed fields for concrete classes.
+
+        Returns:
+            Spawned processor with applied config.
+        """
 
     @abstractmethod
     def process(
