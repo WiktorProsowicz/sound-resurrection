@@ -35,6 +35,12 @@ class FragmentsCuttingProcessor(processing_node.ProcessingNode):
 
         return f'CutSoundProcessor(duration={self._cut_duration})'
 
+    @classmethod
+    def from_config(cls, config: Dict[str, any]):
+        """Overrides method of ProcessingNode class."""
+
+        return cls(config['allow_backward_processing'], config['cut_duration'])
+
     def process(self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
         """Overrides method of ProcessingNode class."""
 
@@ -61,7 +67,7 @@ class FragmentsCuttingProcessor(processing_node.ProcessingNode):
         copied_data = signal.data.copy()
 
         for idx, cut_range in kwargs['cut_ranges']:
-            copied_data.data[:, idx:idx + len(cut_range)].fill(0)
+            copied_data[:, idx:idx + cut_range.shape[1]].fill(0)
 
         return audio_signal.AudioSignal(copied_data, signal.meta)
 
@@ -114,8 +120,25 @@ class FragmentsCuttingProcessor(processing_node.ProcessingNode):
                 'Requested to cut a number of samples that is bigger ' +
                 'than the cumulative number of samples in the signal!')
 
-        idx = np.random.randint(0, max_samples - cut_samples + 1)
+        cut_ranges_lengths = np.random.randint(
+            2, cut_samples // 10, self._N_CUT_RANGES_CLASSES - 1)
 
-        return [(idx, data[:, idx:idx + cut_samples])]
+        cut_ranges_lengths = np.concatenate([cut_ranges_lengths, np.array([1])])
+        cut_ranges_lengths = sorted(cut_ranges_lengths, reverse=True)
 
-        # TODO: Implement algorithm that would cut multiple data ranges, not just one.
+        cut_ranges_counts = {length: 0 for length in cut_ranges_lengths}
+        left_samples = cut_samples
+
+        for range_length in cut_ranges_lengths:
+            while range_length <= left_samples:
+                cut_ranges_counts[range_length] += 1
+                left_samples -= range_length
+
+        generated_ranges: List[Tuple[int, np.ndarray]] = []
+
+        for range_length, range_count in cut_ranges_counts.items():
+            for _ in range(range_count):
+                pos = np.random.randint(0, max_samples - range_length + 1)
+                generated_ranges.append((pos, data[:, pos:pos + range_length]))
+
+        return generated_ranges
