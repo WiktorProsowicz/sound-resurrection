@@ -96,8 +96,7 @@ class PreprocessingManager:
         temp_head = chain_head
 
         for processor in self._params.processors:
-            temp_head = self._spawn_signal_processing_coroutine(
-                processor, temp_head)
+            temp_head = self._spawn_signal_processing_coroutine(processor, temp_head)
             next(temp_head)
 
         file_sender = self._spawn_file_sending_coroutine(temp_head)

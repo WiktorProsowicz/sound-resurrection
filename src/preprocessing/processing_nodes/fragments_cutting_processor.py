@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """Contains definition of a class performing random cuts in audio signals."""
-
-from typing import Dict, Tuple, List
+from typing import Dict
+from typing import List
+from typing import Tuple
 
 import numpy as np
-
 from preprocessing import audio_signal
 from preprocessing.processing_nodes import processing_node
 
@@ -33,7 +33,7 @@ class FragmentsCuttingProcessor(processing_node.ProcessingNode):
     def signature(self) -> str:
         """Overrides method of ProcessingNode class."""
 
-        return f"CutSoundProcessor(duration={self._cut_duration})"
+        return f'CutSoundProcessor(duration={self._cut_duration})'
 
     def process(self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
         """Overrides method of ProcessingNode class."""
@@ -60,7 +60,7 @@ class FragmentsCuttingProcessor(processing_node.ProcessingNode):
 
         copied_data = signal.data.copy()
 
-        for idx, cut_range in kwargs["cut_ranges"]:
+        for idx, cut_range in kwargs['cut_ranges']:
             copied_data.data[:, idx:idx + len(cut_range)].fill(0)
 
         return audio_signal.AudioSignal(copied_data, signal.meta)
@@ -77,7 +77,7 @@ class FragmentsCuttingProcessor(processing_node.ProcessingNode):
             return audio_signal.AudioSignal(copied_data, signal.meta)
 
         raise processing_node.AudioProcessingError(
-            "Backward processing for the given signal is not available!")
+            'Backward processing for the given signal is not available!')
 
     def _store_processing_info(self, signal: audio_signal.AudioSignal, *args, **kwargs):
         """Overrides method of ProcessingNode class.
@@ -89,7 +89,7 @@ class FragmentsCuttingProcessor(processing_node.ProcessingNode):
                 cut_ranges: A list of cut data ranges extracted from the signal.
         """
 
-        self._cut_ranges[signal] = kwargs["cut_ranges"]
+        self._cut_ranges[signal] = kwargs['cut_ranges']
 
     def _random_cut(self, data: np.ndarray, sampling_rate: int) -> List[Tuple[int, np.ndarray]]:
         """Performs a random cut on the input audio data.
@@ -111,8 +111,8 @@ class FragmentsCuttingProcessor(processing_node.ProcessingNode):
 
         if max_samples < cut_samples:
             raise processing_node.AudioProcessingError(
-                ("Requested to cut a number of samples that is bigger " +
-                 "than the cumulative number of samples in the signal!"))
+                'Requested to cut a number of samples that is bigger ' +
+                'than the cumulative number of samples in the signal!')
 
         idx = np.random.randint(0, max_samples - cut_samples + 1)
 

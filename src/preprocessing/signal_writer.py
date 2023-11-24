@@ -1,5 +1,5 @@
+# -*- coding: utf-8 -*-
 """Contains definition of class serializing audio signals."""
-
 import dataclasses
 import enum
 import os
@@ -7,14 +7,13 @@ from typing import Optional
 
 import numpy as np
 import soundfile as sf
-
 from preprocessing import audio_signal
 
 
 class WriterFileExtension(enum.Enum):
     """Contains supported audio file extensions."""
 
-    WAVE = "wav"
+    WAVE = 'wav'
 
 
 @dataclasses.dataclass()
@@ -35,7 +34,7 @@ class SignalWriter:
     The form of the result file depends on the internal writer's configuration.
     """
 
-    _DEFAULT_OUTPUT_NAME_PATTERN = "audio_signal"
+    _DEFAULT_OUTPUT_NAME_PATTERN = 'audio_signal'
 
     def __init__(self, params: WriterParams):
         """Initializes the writer with given parameters.
@@ -66,7 +65,7 @@ class SignalWriter:
 
         if 'file_name' not in kwargs:
             if not self._params.generate_names:
-                raise ValueError("File name was not provided and generation is disabled!")
+                raise ValueError('File name was not provided and generation is disabled!')
 
             file_name = self._generate_file_name(destination_dir)
 
@@ -83,7 +82,7 @@ class SignalWriter:
                 self._write_wave(signal, file_path)
                 return
 
-        assert False, "Unsupported file extension!"
+        assert False, 'Unsupported file extension!'
 
     def _generate_file_name(self, destination_dir: str) -> str:
         """Generates a file name for a given signal.
@@ -106,8 +105,8 @@ class SignalWriter:
             chosen_pattern = SignalWriter._DEFAULT_OUTPUT_NAME_PATTERN
 
         while True:
-            file_name = (f"{chosen_pattern}_{self._generated_names_count}" +
-                         f".{self._params.file_extension.value}")
+            file_name = (f'{chosen_pattern}_{self._generated_names_count}' +
+                         f'.{self._params.file_extension.value}')
             file_path = os.path.join(destination_dir, file_name)
 
             self._generated_names_count += 1
@@ -132,7 +131,7 @@ class SignalWriter:
         data = np.swapaxes(signal.data, 0, 1)
 
         if f'PCM_{sample_width * 8}' not in sf.available_subtypes('WAV'):
-            assert False, f"Unsupported data type size {sample_width} for WAV format!"
+            assert False, f'Unsupported data type size {sample_width} for WAV format!'
 
         sf.write(file_path, data, signal.meta.sampling_rate, f'PCM_{sample_width * 8}')
 

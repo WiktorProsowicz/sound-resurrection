@@ -1,12 +1,11 @@
+# -*- coding: utf-8 -*-
 """Contains functions for reading audio signal files."""
-
+import dataclasses
 import os
 import wave
-import dataclasses
 from typing import Optional
 
 import librosa
-
 from preprocessing import audio_signal
 
 
@@ -63,10 +62,10 @@ class SignalReader:
         _, file_extension = os.path.splitext(file_path)
 
         match file_extension:
-            case ".wav" | ".wave":
+            case '.wav' | '.wave':
                 return self._read_wave(file_path)
 
-        raise IncorrectAudioFileError(f"Unsupported file type: {file_extension}!")
+        raise IncorrectAudioFileError(f'Unsupported file type: {file_extension}!')
 
     def _validate_params(self, params: ReaderParams):
         """Checks if the passed parameters are valid.
@@ -79,12 +78,12 @@ class SignalReader:
         """
 
         if params.dest_sampling_rate is not None and params.dest_sampling_rate <= 0:
-            raise ValueError("Destination sampling rate must be positive!")
+            raise ValueError('Destination sampling rate must be positive!')
 
     def _read_wave(self, file_path: str) -> audio_signal.AudioSignal:
         """Reads a file identified as a wave container."""
 
-        with wave.open(file_path, "rb") as input_binary:
+        with wave.open(file_path, 'rb') as input_binary:
 
             meta_data = audio_signal.AudioMeta(input_binary.getframerate(),
                                                input_binary.getnchannels(),
