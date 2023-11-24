@@ -43,7 +43,7 @@ repos:
     rev: v2.0.4
     hooks:
       - id: autopep8
-        args: [--in-place, --aggressive]
+        args: [--in-place, --aggressive, --max-line-length=100]
 
   # Makes sure the python variables are used according to their types.
   - repo: https://github.com/pre-commit/mirrors-mypy
