@@ -1,0 +1,18 @@
+# ------------------------------------------------------------------------------
+# This file contains a template configuration for the run_preprocessing script.
+# The contents specify parameters like the number of used processors, paths to
+# input & output etc.
+# ------------------------------------------------------------------------------
+
+manager_params: # contains values of ManagerParams class fields
+  input_path: "/home/wiktor/projects/python-projects/sound-resurrection/tests/res/preprocessing_inputs"
+  output_path: "/home/wiktor/projects/python-projects/sound-resurrection/test_results/preprocessing_outputs"
+  search_recursively: true
+  filter: ".*\\.wav"
+
+  processors: # each element is contains specification of used processor
+    - index: 0 # position of the processor in the pipeline
+      type: FragmentsCuttingProcessor # used processor class
+      processor_cfg: # parameters the processor shall gather its config from
+        allow_backward_processing: true
+        cut_duration: .5
