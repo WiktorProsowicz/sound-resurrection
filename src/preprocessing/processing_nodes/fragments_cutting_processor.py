@@ -2,7 +2,7 @@
 """Contains definition of a class performing random cuts in audio signals."""
 from typing import Dict
 from typing import List
-from typing import Tuple
+from typing import Tuple, Any
 
 import numpy as np
 from preprocessing import audio_signal
@@ -13,38 +13,49 @@ class FragmentsCuttingProcessor(processing_node.ProcessingNode):
     """Cuts portions of audio signals.
 
     The processor is used to create imitation of connection / recording flaws.
+    Cut part of the signal may not be equal to the one specified as it is currently
+    only the expected sum of generated cut ranges. The ranges themselves can overlap.
     """
 
-    _N_CUT_RANGES_CLASSES = 10
+    _N_CUT_RANGES_CLASSES = 10  # Number of possible lengths of generated cut ranges.
+    _MAX_CUT_RANGE_PART = .3  # Maximum contribution of a single cut range to the whole cut.
 
-    def __init__(self, allow_backward_processing: bool, cut_duration: float):
+    def __init__(self, allow_backward_processing: bool, cut_part: float):
         """
         Initializes the base class and sets internal processor's config.
 
         Args:
             allow_backward_processing: Whether to allow reversal of the cut operation.
-            cut_duration: Cumulative duration of the cut in seconds.
+            cut_part: Part of the signal that shall be sum of determined cut ranges.
+                Expected value range is [0, 1].
+
+        Raises:
+            ValueError: If the given cut part value is not in allowed range.
         """
+
+        if 0.0 > cut_part or cut_part > 1.0:
+            raise ValueError('Cut part value must be in range [0, 1]!')
+
         super().__init__(allow_backward_processing)
-        self._cut_duration = cut_duration
+        self._cut_part = cut_part
         self._cut_ranges: Dict[audio_signal.AudioSignal, List[Tuple[int, np.ndarray]]] = {}
 
     @property
     def signature(self) -> str:
         """Overrides method of ProcessingNode class."""
 
-        return f'CutSoundProcessor(duration={self._cut_duration})'
+        return f'CutSoundProcessor(cut_part={self._cut_part})'
 
     @classmethod
-    def from_config(cls, config: Dict[str, any]):
+    def from_config(cls, config: Dict[str, Any]):
         """Overrides method of ProcessingNode class."""
 
-        return cls(config['allow_backward_processing'], config['cut_duration'])
+        return cls(config['allow_backward_processing'], config['cut_part'])
 
     def process(self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
         """Overrides method of ProcessingNode class."""
 
-        cut_data = self._random_cut(signal.data, signal.meta.sampling_rate)
+        cut_data = self._random_cut(signal.data)
 
         transformed = self._apply_transformations(signal, cut_ranges=cut_data)
 
@@ -97,7 +108,7 @@ class FragmentsCuttingProcessor(processing_node.ProcessingNode):
 
         self._cut_ranges[signal] = kwargs['cut_ranges']
 
-    def _random_cut(self, data: np.ndarray, sampling_rate: int) -> List[Tuple[int, np.ndarray]]:
+    def _random_cut(self, data: np.ndarray) -> List[Tuple[int, np.ndarray]]:
         """Performs a random cut on the input audio data.
 
         The extracted data ranges sum up to the cumulative duration
@@ -111,28 +122,11 @@ class FragmentsCuttingProcessor(processing_node.ProcessingNode):
             List containing positions of extracted data ranges and the ranges themselves.
         """
 
-        cut_samples = int(self._cut_duration * sampling_rate)
-
         max_samples = data.shape[1]
 
-        if max_samples < cut_samples:
-            raise processing_node.AudioProcessingError(
-                'Requested to cut a number of samples that is bigger ' +
-                'than the cumulative number of samples in the signal!')
+        cut_samples = int(self._cut_part * max_samples)
 
-        cut_ranges_lengths = np.random.randint(
-            2, cut_samples // 10, self._N_CUT_RANGES_CLASSES - 1)
-
-        cut_ranges_lengths = np.concatenate([cut_ranges_lengths, np.array([1])])
-        cut_ranges_lengths = sorted(cut_ranges_lengths, reverse=True)
-
-        cut_ranges_counts = {length: 0 for length in cut_ranges_lengths}
-        left_samples = cut_samples
-
-        for range_length in cut_ranges_lengths:
-            while range_length <= left_samples:
-                cut_ranges_counts[range_length] += 1
-                left_samples -= range_length
+        cut_ranges_counts = self._generate_cut_ranges_counts(cut_samples)
 
         generated_ranges: List[Tuple[int, np.ndarray]] = []
 
@@ -142,3 +136,32 @@ class FragmentsCuttingProcessor(processing_node.ProcessingNode):
                 generated_ranges.append((pos, data[:, pos:pos + range_length]))
 
         return generated_ranges
+
+    def _generate_cut_ranges_counts(self, cut_samples: int) -> Dict[int, int]:
+        """Generates a dictionary of cut ranges lengths and their counts.
+
+        Cumulative length of the generated ranges shall be equal to the
+        number of samples specified by the cut part specified for the processor.
+
+        Args:
+            cut_samples: Number of samples to cut.
+
+        Returns:
+            Dictionary containing cut ranges lengths and their counts.
+        """
+
+        max_cut_length = int(self._MAX_CUT_RANGE_PART * cut_samples)
+
+        cut_ranges_lengths = np.random.choice(np.arange(2, max_cut_length),
+                                              self._N_CUT_RANGES_CLASSES - 1)
+
+        cut_ranges_lengths = np.concatenate([cut_ranges_lengths, np.array([1])])
+        cut_ranges_lengths = sorted(cut_ranges_lengths, reverse=True)
+
+        cut_ranges_counts = {length: 0 for length in cut_ranges_lengths}
+
+        for range_length in cut_ranges_lengths:
+            while sum(length * cnt for length, cnt in cut_ranges_counts.items()) < cut_samples:
+                cut_ranges_counts[range_length] += 1
+
+        return cut_ranges_counts
