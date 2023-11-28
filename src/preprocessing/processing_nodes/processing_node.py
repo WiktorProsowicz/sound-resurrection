@@ -2,6 +2,7 @@
 """Module contains declarations of interfaces for pre-processors."""
 from abc import ABC
 from abc import abstractmethod
+from typing import Any
 from typing import Dict
 
 from preprocessing import audio_signal
@@ -30,7 +31,7 @@ class ProcessingNode(ABC):
 
     @classmethod
     @abstractmethod
-    def from_config(cls, config: Dict[str, any]):
+    def from_config(cls, config: Dict[str, Any]):
         """Spawns a processing node from provided configuration.
 
         Interpretation of the configuration depends on the concrete subclass
