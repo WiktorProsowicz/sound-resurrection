@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 """Contains definition of a class performing random cuts in audio signals."""
+from typing import Any
 from typing import Dict
 from typing import List
-from typing import Tuple, Any
+from typing import Tuple
 
 import numpy as np
+
 from preprocessing import audio_signal
 from preprocessing.processing_nodes import processing_node
 

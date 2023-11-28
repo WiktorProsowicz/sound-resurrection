@@ -3,6 +3,7 @@ import os
 import shutil
 
 import pytest
+
 from preprocessing import audio_signal
 from preprocessing import preprocessing_manager
 from preprocessing.processing_nodes import processing_node
