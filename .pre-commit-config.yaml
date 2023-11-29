@@ -66,8 +66,10 @@ repos:
           - "--disable=fixme"
           - "--disable=too-few-public-methods"
 
-  # Checks whether the python import statements are properly sorted
+  # Checks whether the python import statements are properly sorted.
   - repo: https://github.com/asottile/reorder-python-imports
     rev: v3.12.0
     hooks:
       - id: reorder-python-imports
+        args:
+          - "--application-directories=.:src"
