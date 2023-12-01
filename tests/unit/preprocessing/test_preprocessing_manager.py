@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import shutil
+from typing import Any, Dict
 
 import pytest
 
@@ -26,6 +27,10 @@ class MockPreprocessor(processing_node.ProcessingNode):
             self._store_processing_info(signal)
 
         return self._apply_transformations(signal)
+
+    @classmethod
+    def from_config(cls, config: Dict[str, Any]) -> 'processing_node.ProcessingNode':
+        return super().from_config(config)
 
     def _apply_transformations(
             self, signal: audio_signal.AudioSignal, *args, **kwargs) -> audio_signal.AudioSignal:
