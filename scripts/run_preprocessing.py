@@ -10,12 +10,14 @@ import yaml  # type: ignore
 from preprocessing import preprocessing_manager
 from preprocessing.processing_nodes import downsampling_processor
 from preprocessing.processing_nodes import fragments_cutting_processor
+from preprocessing.processing_nodes import noise_adding_processor
 from preprocessing.processing_nodes import processing_node
 from utilities import logging_utils
 
 STR_TO_CLASS_DICT: Dict[str, type[processing_node.ProcessingNode]] = {
     'FragmentsCuttingProcessor': fragments_cutting_processor.FragmentsCuttingProcessor,
     'DownSamplingProcessor': downsampling_processor.DownSamplingProcessor,
+    'NoiseAddingProcessor': noise_adding_processor.NoiseAddingProcessor,
 }
 
 

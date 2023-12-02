@@ -27,3 +27,11 @@ manager_params:
           target_sampling_rate: 22050
           filter_poly_order: 5
           filter_ripple_extent: 1.5
+
+    - index: 2
+      type: NoiseAddingProcessor
+      processor_cfg:
+        allow_backward_processing: false
+        noise_providers:
+          - AWGNoiseProvider:
+              noise_std: 1.0
