@@ -46,7 +46,7 @@ class FragmentsCuttingProcessor(processing_node.ProcessingNode):
     def signature(self) -> str:
         """Overrides method of ProcessingNode class."""
 
-        return f'CutSoundProcessor(cut_part={self._cut_part})'
+        return f'FragmentsCuttingProcessor(cut_part={self._cut_part})'
 
     @classmethod
     def from_config(cls, config: Dict[str, Any]) -> 'processing_node.ProcessingNode':

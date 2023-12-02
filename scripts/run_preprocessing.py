@@ -4,6 +4,8 @@
 import argparse
 from typing import Any
 from typing import Dict
+import logging
+import io
 
 import yaml  # type: ignore
 
@@ -51,6 +53,24 @@ def _load_config(path: str) -> Dict[str, Any]:
         return yaml.safe_load(config_file)
 
 
+def _print_manager_params(manager_params: preprocessing_manager.ManagerParams):
+    """Prints preprocessing configuration to the console."""
+
+    stream = io.StringIO()
+
+    stream.write('Preprocessing configuration:\n')
+
+    stream.write(f'Input path: \'{manager_params.input_path}\'\n')
+    stream.write(f'Output path: \'{manager_params.output_path}\'\n')
+    stream.write(f'Search recursively: {manager_params.search_recursively}\n')
+    stream.write(f'Filter: \'{manager_params.filter}\'\n')
+    stream.write('Processors:\n\t')
+
+    stream.write('\n\t'.join(processor.signature for processor in manager_params.processors))
+
+    logging.info(stream.getvalue())
+
+
 def main(config: Dict[str, Any]):
     """Initializes preprocessing pipeline and runs it.
 
@@ -67,6 +87,8 @@ def main(config: Dict[str, Any]):
         m_params['input_path'], m_params['output_path'], processors,
         m_params['search_recursively'], m_params['filter']
     )
+
+    _print_manager_params(manager_params)
 
     manager = preprocessing_manager.PreprocessingManager(manager_params)
 
