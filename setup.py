@@ -17,22 +17,32 @@ from os import path
 HOME_PATH = pathlib.Path(__file__).absolute().parent.as_posix()
 
 
-def run_tests() -> None:
-    """Runs available tests from the 'tests' directory."""
+@dataclasses.dataclass(frozen=True)
+class _TestsRunParams:
+    """Contains configuration used while running tests."""
 
-    tests_path = path.join(HOME_PATH, 'tests')
+    tests_path: str  # contains test files
+    resources_path: str  # contains resources used by tests
+    results_path: str  # shall contain test results dump
+
+
+def _run_tests(config: _TestsRunParams) -> None:
+    """Runs a specific kind of tests.
+
+    Args:
+        config: Configuration of the tests to be run.
+    """
+
     src_path = path.join(HOME_PATH, 'src')
 
-    test_results_path = path.join(HOME_PATH, 'test_results')
+    coverage_data_file = path.join(config.results_path, '.coverage')
+    coverage_stats_dir = path.join(config.results_path, 'coverage_stats')
 
-    coverage_data_file = path.join(test_results_path, '.coverage')
-    coverage_stats_dir = path.join(test_results_path, 'coverage_stats')
-
-    if not os.path.exists(test_results_path):
-        os.makedirs(test_results_path)
+    if not os.path.exists(config.results_path):
+        os.makedirs(config.results_path)
 
     # Cleaning test_results.
-    for root, dirs, files in os.walk(test_results_path):
+    for root, dirs, files in os.walk(config.results_path):
 
         for file in files:
             os.remove(os.path.join(root, file))
@@ -40,19 +50,43 @@ def run_tests() -> None:
             shutil.rmtree(os.path.join(root, directory))
 
     current_env = environ.copy()
-    current_env['PYTHONPATH'] = f"{src_path}:{current_env.get('PYTHONPATH', '')}"
-    current_env['TEST_RESOURCES'] = path.join(HOME_PATH, 'tests', 'res')
-    current_env['TEST_RESULTS'] = path.join(HOME_PATH, 'test_results')
+    current_env['PYTHONPATH'] = (src_path +
+                                 ':' + current_env.get('PYTHONPATH', ''))
+    current_env['TEST_RESOURCES'] = config.resources_path
+    current_env['TEST_RESULTS'] = config.results_path
+
+    logging.info('Running tests...')
 
     command = (f'python3 -m coverage run --data-file={coverage_data_file}'
-               f' -m pytest --import-mode=prepend -s {tests_path}')
+               f' -m pytest --import-mode=prepend -s {config.tests_path}')
 
     subprocess.run(command.split(), check=False, env=current_env)
+
+    logging.info('Generating coverage report...')
 
     command = (f'python3 -m coverage html --data-file={coverage_data_file}'
                f' --directory={coverage_stats_dir}')
 
     subprocess.run(command.split(), check=False, env=current_env)
+
+    os.remove(coverage_data_file)
+
+
+def run_unit_tests() -> None:
+    """Run available unit tests from the 'tests/unit' directory."""
+
+    tests_path = path.join(HOME_PATH, 'tests', 'unit')
+    resources_path = path.join(HOME_PATH, 'tests', 'unit', 'res')
+    results_path = path.join(HOME_PATH, 'test_results', 'unit')
+
+    tests_config = _TestsRunParams(tests_path, resources_path, results_path)
+
+    logging.info('Tests configuration:')
+    logging.info('\ttests_path: %s', tests_config.tests_path)
+    logging.info('\tresources_path: %s', tests_config.resources_path)
+    logging.info('\tresults_path: %s', tests_config.results_path)
+
+    _run_tests(tests_config)
 
 
 def setup_venv() -> None:
@@ -102,6 +136,27 @@ def run_script(script_name: str, *args) -> None:
     subprocess.run(command.split(), check=False, env=current_env)
 
 
+def _get_arg_parser() -> argparse.ArgumentParser:
+    """Returns an argument parser for the script."""
+
+    functions_descriptions = '\n'.join(
+        [f'{func.__name__}: {func.__doc__}' for func in [setup_venv, run_unit_tests]])
+
+    program_desc = ('Script contains functions helping with project management.\n' +
+                    'Available functions:\n\n' +
+                    f'{functions_descriptions}')
+
+    arg_parser = argparse.ArgumentParser(
+        description=program_desc, formatter_class=argparse.RawDescriptionHelpFormatter)
+
+    arg_parser.add_argument(
+        'function_name', help='name of the function to be used')
+    arg_parser.add_argument(
+        'args', nargs='*', help='positional arguments for the function')
+
+    return arg_parser
+
+
 def main(function: str, *args) -> None:
     """Main function delegating the flow to other ones.
 
@@ -109,7 +164,7 @@ def main(function: str, *args) -> None:
         function (str): Name of the function to be called.
     """
 
-    for available_func in [setup_venv, run_tests, run_script]:
+    for available_func in [setup_venv, run_unit_tests, run_script]:
         if available_func.__name__ == function:
             available_func(*args)  # type: ignore
             return
@@ -119,25 +174,7 @@ def main(function: str, *args) -> None:
 
 if __name__ == '__main__':
 
-    FUNCTION_DESCRIPTIONS_LIST = [f'{func.__name__}: {func.__doc__.splitlines()[0]}'  # type: ignore
-                                  for func in [setup_venv, run_tests, run_script]]
-
-    FUNCTION_DESCRIPTIONS = '\n'.join(FUNCTION_DESCRIPTIONS_LIST)
-
-    PROGRAM_DESC = ('Script contains functions helping with project management.\n' +
-                    'Available functions:\n\n' +
-                    f'{FUNCTION_DESCRIPTIONS}')
-
-    arg_parser = argparse.ArgumentParser(
-        description=PROGRAM_DESC, formatter_class=argparse.RawDescriptionHelpFormatter)
-
-    arg_parser.add_argument(
-        'function_name', help='name of the function to be used')
-    arg_parser.add_argument(
-        'args', nargs='*', help='positional arguments for the function')
-
-    arguments = arg_parser.parse_args()
-
-    logging.root.setLevel(logging.INFO)
+    parser = _get_arg_parser()
+    arguments = parser.parse_args()
 
     main(arguments.function_name, *arguments.args)
