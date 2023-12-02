@@ -61,7 +61,7 @@ class DownSamplingProcessor(processing_node.ProcessingNode):
         return f'DownSamplingProcessor(config={self._params}))'
 
     @classmethod
-    def from_config(cls, config: Dict[str, Any]):
+    def from_config(cls, config: Dict[str, Any]) -> 'processing_node.ProcessingNode':
         """Overrides method of ProcessingNode class."""
 
         return cls(config['allow_backward_processing'], ProcessorParams(**config['params']))

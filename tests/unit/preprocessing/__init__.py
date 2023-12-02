@@ -1,2 +1,2 @@
 # -*- coding: utf-8 -*-
-"""Package containing unit tests for sound-resurrection `preprocessing` package."""
+"""Package containing tests for sound-resurrection software."""

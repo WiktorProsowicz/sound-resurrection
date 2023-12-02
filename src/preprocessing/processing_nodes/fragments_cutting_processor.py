@@ -49,7 +49,7 @@ class FragmentsCuttingProcessor(processing_node.ProcessingNode):
         return f'CutSoundProcessor(cut_part={self._cut_part})'
 
     @classmethod
-    def from_config(cls, config: Dict[str, Any]):
+    def from_config(cls, config: Dict[str, Any]) -> 'processing_node.ProcessingNode':
         """Overrides method of ProcessingNode class."""
 
         return cls(config['allow_backward_processing'], config['cut_part'])

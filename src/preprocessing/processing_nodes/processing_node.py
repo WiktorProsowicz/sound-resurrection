@@ -31,7 +31,7 @@ class ProcessingNode(ABC):
 
     @classmethod
     @abstractmethod
-    def from_config(cls, config: Dict[str, Any]):
+    def from_config(cls, config: Dict[str, Any]) -> 'ProcessingNode':
         """Spawns a processing node from provided configuration.
 
         Interpretation of the configuration depends on the concrete subclass
