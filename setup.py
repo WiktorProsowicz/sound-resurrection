@@ -5,14 +5,16 @@ Available functions and corresponding arguments are described in the
 main function as well as in the doc strings of the functions.
 """
 import argparse
+import dataclasses
 import logging
 import os
 import pathlib
 import shutil
 import subprocess
 import venv
-from os import environ
-from os import path
+from os import environ, path
+
+from src.utilities import logging_utils
 
 HOME_PATH = pathlib.Path(__file__).absolute().parent.as_posix()
 
@@ -140,7 +142,8 @@ def _get_arg_parser() -> argparse.ArgumentParser:
     """Returns an argument parser for the script."""
 
     functions_descriptions = '\n'.join(
-        [f'{func.__name__}: {func.__doc__}' for func in [setup_venv, run_unit_tests]])
+        [f'{func.__name__}: {func.__doc__.splitlines()[0]}'
+         for func in [setup_venv, run_unit_tests, run_script]])
 
     program_desc = ('Script contains functions helping with project management.\n' +
                     'Available functions:\n\n' +
@@ -169,12 +172,14 @@ def main(function: str, *args) -> None:
             available_func(*args)  # type: ignore
             return
 
-    raise RuntimeError(f"Couldn't find the function '{function}'.")
+    logging.error("Couldn't find the function '%s'.", function)
 
 
 if __name__ == '__main__':
 
     parser = _get_arg_parser()
     arguments = parser.parse_args()
+
+    logging_utils.setup_logging()
 
     main(arguments.function_name, *arguments.args)
