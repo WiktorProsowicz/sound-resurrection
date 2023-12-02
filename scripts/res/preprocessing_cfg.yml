@@ -20,10 +20,10 @@ manager_params:
         cut_part: 0.2
 
     - index: 1
-      type: DownsamplingProcessor
+      type: DownSamplingProcessor
       processor_cfg:
         allow_backward_processing: false
         params:
-          target_sample_rate: 22050
+          target_sampling_rate: 22050
           filter_poly_order: 5
           filter_ripple_extent: 1.5
