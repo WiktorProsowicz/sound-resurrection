@@ -5,6 +5,7 @@ import os
 import wave
 from typing import Optional
 
+import numpy as np
 import librosa
 
 from preprocessing import audio_signal
@@ -20,6 +21,8 @@ class ReaderParams:
 
     # If set, the reader will resample decoded signals to the given sampling rate.
     dest_sampling_rate: Optional[int] = None
+    # If set, the reader will either copy or cut signal channels to match the given number.
+    dest_channels: Optional[int] = None
 
 
 class SignalReader:
@@ -81,18 +84,44 @@ class SignalReader:
         if params.dest_sampling_rate is not None and params.dest_sampling_rate <= 0:
             raise ValueError('Destination sampling rate must be positive!')
 
+        if params.dest_channels is not None and params.dest_channels <= 0:
+            raise ValueError('Destination number of channels must be positive!')
+
+    def _try_rechannel(self, data: np.ndarray) -> np.ndarray:
+        """Attempts to rechannel the given data to match the reader's configuration."""
+
+        if self._params.dest_channels is None or data.shape[0] == self._params.dest_channels:
+            return data
+
+        if data.shape[0] > self._params.dest_channels:
+            return data[:self._params.dest_channels]
+
+        return np.broadcast_to(data[:1], (self._params.dest_channels, data.shape[1]))
+
     def _read_wave(self, file_path: str) -> audio_signal.AudioSignal:
         """Reads a file identified as a wave container."""
 
         with wave.open(file_path, 'rb') as input_binary:
 
-            meta_data = audio_signal.AudioMeta(input_binary.getframerate(),
-                                               input_binary.getnchannels(),
+            target_sr = input_binary.getframerate()
+
+            if self._params.dest_sampling_rate is not None:
+                target_sr = self._params.dest_sampling_rate
+
+            target_channels = input_binary.getnchannels()
+
+            if self._params.dest_channels is not None:
+                target_channels = self._params.dest_channels
+
+            meta_data = audio_signal.AudioMeta(target_sr,
+                                               target_channels,
                                                input_binary.getsampwidth() * 8)
 
-            data, _ = librosa.load(file_path, sr=meta_data.sampling_rate)
+            data, _ = librosa.load(file_path, sr=self._params.dest_sampling_rate)
 
             if data.ndim == 1:
                 data = data.reshape((1, -1))
+
+            data = self._try_rechannel(data)
 
             return audio_signal.AudioSignal(data, meta_data)
