@@ -1,6 +1,6 @@
 # Sound Resurrection
 
-Sound Resurrection is a project containing research results from the Sound Processing in ML area. The goal of the research is to design a model performing sound generation based on masked input with the focus put on the sound taken from video conferences.
+Sound Resurrection is a project containing research results from the Sound Processing in ML area. The goal of the research is to design a model performing sound generation based on masked input with the focus put on the sound taken from video conferences. Another part of the project includes audio signal denoising (in this case - deleting background rustle or conversations, if present) and generating sound with richer spectral envelope from downsampled signal (with effort put on audio distortions that result from audio compression).
 
 The following document contains brief description of the project as well as the explanation of the project's structure.
 
@@ -28,7 +28,7 @@ root:
 python3 setup.py setup_venv
 ```
 
-- Than activate the virtual environment with:
+- Then activate the virtual environment with:
 ```bash
 source venv/bin/activate`
 ```
@@ -52,6 +52,9 @@ pip install -r requirements-dev.txt
 # If you want to use GPU acceleration (recommended)
 pip install --extra-index-url https://pypi.nvidia.com tensorrt-bindings==8.6.1 tensorrt-libs==8.6.1
 pip install -U tensorflow[and-cuda]
+
+# Otherwise
+pip install tensorflow==2.15.0
 ```
 
 - To use code checks:
