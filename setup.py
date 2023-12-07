@@ -39,11 +39,13 @@ def _run_tests(config: _TestsRunParams) -> None:
 
     coverage_data_file = path.join(config.results_path, '.coverage')
     coverage_stats_dir = path.join(config.results_path, 'coverage_stats')
+    tests_report_file = path.join(config.results_path, 'tests_report.xml')
 
     if not os.path.exists(config.results_path):
         os.makedirs(config.results_path)
 
-    # Cleaning test_results.
+    logging.info('Cleaning test results directory...')
+
     for root, dirs, files in os.walk(config.results_path):
 
         for file in files:
@@ -59,15 +61,16 @@ def _run_tests(config: _TestsRunParams) -> None:
 
     logging.info('Running tests...')
 
-    command = (f'python3 -m coverage run --data-file={coverage_data_file}'
-               f' -m pytest --import-mode=prepend -s {config.tests_path}')
+    command = (f'python3 -m coverage run --data-file={coverage_data_file} --source={src_path}'
+               f' -m pytest --import-mode=prepend -s {config.tests_path} --tb=short'
+               f' --junitxml={tests_report_file} -W ignore::DeprecationWarning')
 
     subprocess.run(command.split(), check=False, env=current_env)
 
     logging.info('Generating coverage report...')
 
     command = (f'python3 -m coverage html --data-file={coverage_data_file}'
-               f' --directory={coverage_stats_dir}')
+               f' --directory={coverage_stats_dir} --omit=*/__init__.py')
 
     subprocess.run(command.split(), check=False, env=current_env)
 
@@ -84,9 +87,9 @@ def run_unit_tests() -> None:
     tests_config = _TestsRunParams(tests_path, resources_path, results_path)
 
     logging.info('Tests configuration:')
-    logging.info('\ttests_path: %s', tests_config.tests_path)
-    logging.info('\tresources_path: %s', tests_config.resources_path)
-    logging.info('\tresults_path: %s', tests_config.results_path)
+    logging.info('\ttests_path:      %s', tests_config.tests_path)
+    logging.info('\tresources_path:  %s', tests_config.resources_path)
+    logging.info('\tresults_path:    %s', tests_config.results_path)
 
     _run_tests(tests_config)
 
