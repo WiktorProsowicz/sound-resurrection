@@ -1,11 +1,12 @@
+# -*- coding: utf-8 -*-
 import os
-
-import pytest
-import numpy as np
 import tempfile
 
-from preprocessing import signal_writer
+import numpy as np
+import pytest
+
 from preprocessing import audio_signal
+from preprocessing import signal_writer
 
 
 SIGNAL_WRITER_OUTPUTS_PATH = os.path.join(os.environ['TEST_RESOURCES'], 'signal_writer_outputs')

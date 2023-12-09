@@ -23,4 +23,3 @@ formatters:
     format: '[%(asctime)s][%(levelname)s][%(name)s] %(message)s'
     datefmt: '%Y-%m-%d %H:%M:%S'
     (): _ColorFormatter # should be replaced by a correct type before loading the config
-

@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 """Contains definition of a processing node performing noise addition to audio signal."""
-
-from abc import ABC, abstractmethod
-from typing import Dict, Any, List
 import random
+from abc import ABC
+from abc import abstractmethod
+from typing import Any
+from typing import Dict
+from typing import List
 
 import numpy as np
 
-from preprocessing.processing_nodes import processing_node
 from preprocessing import audio_signal
+from preprocessing.processing_nodes import processing_node
 
 
 class NoiseProvider(ABC):
@@ -68,10 +70,10 @@ class NoiseAddingProcessor(processing_node.ProcessingNode):
         """
 
         known_providers = {
-            "AWGNoiseProvider": AWGNoiseProvider
+            'AWGNoiseProvider': AWGNoiseProvider
         }
 
-        def parse_provider(provider_cfg: Dict[str, Any]) -> NoiseProvider:
+        def parse_provider(provider_cfg: Dict[str, Any]) -> NoiseProvider:  # type: ignore
             if len(provider_cfg) != 1:
                 raise ValueError(
                     'Noise provider config must contain exactly one key being its type!')
@@ -80,7 +82,7 @@ class NoiseAddingProcessor(processing_node.ProcessingNode):
                 if name not in known_providers:
                     raise ValueError(f'Unknown noise provider: {name}')
 
-                return known_providers[name](**params)
+                return known_providers[name](**params)  # type: ignore
 
         providers = [parse_provider(provider_cfg) for provider_cfg in config['noise_providers']]
 
@@ -126,7 +128,7 @@ class NoiseAddingProcessor(processing_node.ProcessingNode):
         if signal in self._saved_noise:
             return audio_signal.AudioSignal(signal.data - self._saved_noise[signal], signal.meta)
 
-        raise processing_node.AudioProcessingError("No noise has been saved for the given signal!")
+        raise processing_node.AudioProcessingError('No noise has been saved for the given signal!')
 
     def _store_processing_info(
             self, signal: audio_signal.AudioSignal, *args, **kwargs):

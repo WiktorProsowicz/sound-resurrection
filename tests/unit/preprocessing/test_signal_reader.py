@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 import os
-
-import pytest
-import numpy as np
-import librosa
 import tempfile
+
+import librosa
+import numpy as np
+import pytest
 
 from preprocessing import signal_reader
 

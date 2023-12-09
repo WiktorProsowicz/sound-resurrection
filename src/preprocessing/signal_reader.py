@@ -5,8 +5,8 @@ import os
 import wave
 from typing import Optional
 
-import numpy as np
 import librosa
+import numpy as np
 
 from preprocessing import audio_signal
 

@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 """Script runs preprocessing pipeline according to provided config."""
 import argparse
+import io
+import logging
 from typing import Any
 from typing import Dict
-import logging
-import io
 
 import yaml  # type: ignore
 
