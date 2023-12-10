@@ -12,9 +12,10 @@ import pathlib
 import shutil
 import subprocess
 import venv
-from os import environ, path
+from os import environ
+from os import path
 
-from src.utilities import logging_utils
+from src.utilities import logging_utils  # type: ignore
 
 HOME_PATH = pathlib.Path(__file__).absolute().parent.as_posix()
 
@@ -63,7 +64,8 @@ def _run_tests(config: _TestsRunParams) -> None:
 
     command = (f'python3 -m coverage run --data-file={coverage_data_file} --source={src_path}'
                f' -m pytest --import-mode=prepend -s {config.tests_path} --tb=short'
-               f' --junitxml={tests_report_file} -W ignore::DeprecationWarning')
+               f' --junitxml={tests_report_file} -W ignore::DeprecationWarning'
+               f' --rootdir={config.tests_path}')
 
     subprocess.run(command.split(), check=False, env=current_env)
 
