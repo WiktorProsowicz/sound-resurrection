@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-
-import pytest
 import numpy as np
+import pytest
 
 from preprocessing import audio_signal
 from preprocessing.processing_nodes import fragments_cutting_processor

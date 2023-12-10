@@ -1,8 +1,8 @@
+# -*- coding: utf-8 -*-
 """This file contains configuration unit tests common for existing suites."""
-
-from typing import List
 import itertools
 import pathlib
+from typing import List
 
 import pytest
 
@@ -15,8 +15,8 @@ def pytest_collection_modifyitems(items: List[pytest.Item]):
         items: List of collected tests.
     """
 
-    grouped_by_path = itertools.groupby(items, lambda item: item.path)
-    grouped_by_path = {path: list(items) for path, items in grouped_by_path}
+    grouped_by_path_gen = itertools.groupby(items, lambda item: item.path)
+    grouped_by_path = {path: list(items) for path, items in grouped_by_path_gen}
 
     sorted_items: List[pytest.Item] = []
     handled_paths: List[pathlib.Path] = []
@@ -24,7 +24,7 @@ def pytest_collection_modifyitems(items: List[pytest.Item]):
     def add_path_to_items(path: pathlib.Path):
         sorted_items.extend(grouped_by_path[path])
 
-    def get_path_by_dependency_name(name: str) -> pathlib.Path:
+    def get_path_by_dependency_name(name: str) -> pathlib.Path:  # type: ignore
         for item in items:
             for mark in item.iter_markers(name='dependency'):
                 if mark.kwargs.get('name', None) == name:
