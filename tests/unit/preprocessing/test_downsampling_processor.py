@@ -35,5 +35,7 @@ def test_resamples_signal(sample_audio_signal):
     processed_signal = processor.process(sample_audio_signal)
 
     assert processed_signal.meta.sampling_rate == target_sr
+    assert processed_signal.meta.channels == 1
+    assert processed_signal.meta.bits_per_sample == 16
 
     assert processed_signal.data.shape == (1, 22050)

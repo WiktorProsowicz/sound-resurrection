@@ -80,9 +80,14 @@ class DownSamplingProcessor(processing_node.ProcessingNode):
                                *args, **kwargs) -> audio_signal.AudioSignal:
         """Overrides method of ProcessingNode class."""
 
-        downsampled_data = self._downsample_and_filter(signal.data, signal.meta.sampling_rate)
+        channels = [self._downsample_and_filter(signal.data[channel], signal.meta.sampling_rate)
+                    for channel in range(signal.meta.channels)]
+        downsampled_data = np.array(channels)
 
-        return audio_signal.AudioSignal(downsampled_data, signal.meta)
+        meta_data = signal.meta
+        meta_data.sampling_rate = self._params.target_sampling_rate
+
+        return audio_signal.AudioSignal(downsampled_data, meta_data)
 
     def _transform_backwards(self, signal: audio_signal.AudioSignal) -> audio_signal.AudioSignal:
         """Overrides method of ProcessingNode class."""
@@ -144,7 +149,8 @@ class DownSamplingProcessor(processing_node.ProcessingNode):
             self._params.filter_ripple_extent,
             critical_frequency,
             btype='lowpass',
-            fs=sampling_rate)
+            fs=sampling_rate,
+            output='sos')
 
         filtered_signal = sp_signal.sosfilt(second_order_sections, data)
 
