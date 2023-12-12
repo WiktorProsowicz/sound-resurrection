@@ -1,14 +1,15 @@
+# -*- coding: utf-8 -*-
 """Contains definition of custom logging tools based on logging lib."""
-
 import logging.config
 import os
-from typing import Any, Dict
 import pathlib
+from typing import Any
+from typing import Dict
 
-import yaml
+import yaml  # type: ignore
 
 UTILITIES_HOME = pathlib.Path(__file__).absolute().parent.as_posix()
-LOGGING_CONFIG_PATH = os.path.join(UTILITIES_HOME, "res", "logging_cfg.yaml")
+LOGGING_CONFIG_PATH = os.path.join(UTILITIES_HOME, 'res', 'logging_cfg.yaml')
 
 
 def setup_logging() -> None:

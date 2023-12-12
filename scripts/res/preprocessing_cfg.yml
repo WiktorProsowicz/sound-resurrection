@@ -1,0 +1,37 @@
+# ------------------------------------------------------------------------------
+# This file contains a template configuration for the run_preprocessing script.
+# The contents specify parameters like the number of used processors, paths to
+# input & output etc.
+# ------------------------------------------------------------------------------
+
+# Contains values of ManagerParams class fields
+manager_params:
+  input_path: ""
+  output_path: ""
+  search_recursively: true
+  filter: ".*\\.wav"
+
+  # Each element contains specification of used processor
+  processors:
+    - index: 0                            # position of the processor in the pipeline
+      type: FragmentsCuttingProcessor     # used processor class
+      processor_cfg:                      # parameters the processor shall gather its config from
+        allow_backward_processing: false
+        cut_part: 0.2
+
+    - index: 1
+      type: DownSamplingProcessor
+      processor_cfg:
+        allow_backward_processing: false
+        params:
+          target_sampling_rate: 22050
+          filter_poly_order: 5
+          filter_ripple_extent: 1.5
+
+    - index: 2
+      type: NoiseAddingProcessor
+      processor_cfg:
+        allow_backward_processing: false
+        noise_providers:
+          - AWGNoiseProvider:
+              noise_std: 1.0
