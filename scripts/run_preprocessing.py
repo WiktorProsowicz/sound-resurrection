@@ -14,12 +14,14 @@ from preprocessing.processing_nodes import downsampling_processor
 from preprocessing.processing_nodes import fragments_cutting_processor
 from preprocessing.processing_nodes import noise_adding_processor
 from preprocessing.processing_nodes import processing_node
+from preprocessing.processing_nodes import resampling_processor
 from utilities import logging_utils
 
 STR_TO_CLASS_DICT: Dict[str, type[processing_node.ProcessingNode]] = {
     'FragmentsCuttingProcessor': fragments_cutting_processor.FragmentsCuttingProcessor,
     'DownSamplingProcessor': downsampling_processor.DownSamplingProcessor,
     'NoiseAddingProcessor': noise_adding_processor.NoiseAddingProcessor,
+    'ResamplingProcessor': resampling_processor.ResamplingProcessor,
 }
 
 
@@ -105,5 +107,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     logging_utils.setup_logging()
+    logging.getLogger('numba').setLevel(logging.WARNING)
 
     main(_load_config(args.config_path))

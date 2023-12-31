@@ -35,3 +35,9 @@ manager_params:
         noise_providers:
           - AWGNoiseProvider:
               noise_std: 1.0
+
+    - index: 3
+      type: ResamplingProcessor
+      processor_cfg:
+        allow_backward_processing: false
+        sampling_rate: 22050
