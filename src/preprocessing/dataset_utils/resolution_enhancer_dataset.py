@@ -15,6 +15,7 @@ class GeneratorParameters:
     low_quality_path: str
     inputs_length: int
     targets_length: int
+    batch_size: int
 
 
 class ResolutionEnhancerDatasetGenerator:
@@ -56,7 +57,7 @@ class ResolutionEnhancerDatasetGenerator:
             self._params.low_quality_path, self._params.inputs_length)
 
         dataset = tf.data.Dataset.zip((low_quality_dataset, high_quality_dataset))
-        dataset = dataset.shuffle(1000)
+        dataset = dataset.shuffle(1000).batch(self._params.batch_size)
 
         return keras.utils.split_dataset(dataset, train_size)
 

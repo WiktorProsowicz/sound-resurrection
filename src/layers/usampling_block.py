@@ -57,7 +57,7 @@ class UpSamplingBlock(keras.layers.Layer):
             name=f'{self.name}/Conv1DTranspose'
         )
 
-        self._batch_norm = keras.layers.BatchNormalization(axis=-2, name=f'{self.name}/BatchNorm')
+        self._batch_norm = keras.layers.BatchNormalization(axis=2, name=f'{self.name}/BatchNorm')
 
         self._dropout = keras.layers.Dropout(
             rate=self._params.dropout_rate,

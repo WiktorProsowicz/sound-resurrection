@@ -32,7 +32,7 @@ class SubPixelShufflingLayer1D(keras.layers.Layer):
             ValueError: If the given input shape is ill-formed from the
             sub-pixel shuffling perspective.
         """
-        if input_shape.ndims < 2 or (input_shape[-1] % self._upsampling_factor) != 0:
+        if len(input_shape) < 2 or (input_shape[-1] % self._upsampling_factor) != 0:
 
             raise ValueError(
                 'The input shape does not conform to the sub-pixel input expectations!' +

@@ -52,7 +52,7 @@ class DownSamplingBlock(keras.layers.Layer):
             ValueError: If the input shape does not match the expected one.
         """
 
-        if input_shape.ndims < 2:
+        if len(input_shape) < 2:
             raise ValueError('Input shape of a sample must be (input_samples_len, channels)!')
 
         super().build(input_shape)
