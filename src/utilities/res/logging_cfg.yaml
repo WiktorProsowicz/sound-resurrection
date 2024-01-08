@@ -12,6 +12,11 @@ loggers:
     handlers: [console_hand]
     level: NOTSET
 
+  audio_res_enhancer:
+    handlers: [console_hand]
+    level: NOTSET
+    propagate: False
+
 handlers:
   console_hand:
     class: logging.StreamHandler
