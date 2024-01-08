@@ -5,9 +5,10 @@ It is a custom model class whose functionality enables extending
 the frequency range for audio signals.
 """
 import dataclasses
-from typing import Iterator
+from typing import Dict, Any
 from typing import List
 from typing import Tuple
+from typing import Iterator
 
 import keras
 import tensorflow as tf
@@ -17,6 +18,7 @@ from layers import subpixel_shuffling_layer as subpixel
 from layers import usampling_block as u_block
 
 
+@keras.saving.register_keras_serializable(package='audio_res_enhancer')
 @dataclasses.dataclass
 class ModelConfig:
     """Stores model configuration."""
@@ -24,8 +26,19 @@ class ModelConfig:
     source_sampling_rate: int
     target_sampling_rate: int
     n_internal_blocks: int  # Number of upsampling/downsampling blocks in the model.
-    dropout_rate: float = .5
-    leaky_relu_alpha: float = .2
+    dropout_rate: float
+    leaky_relu_alpha: float
+
+    def get_config(self) -> Dict[str, Any]:
+        """Returns config needed to serialize the model."""
+
+        return dataclasses.asdict(self)
+
+    @classmethod
+    def from_config(cls, config: Dict[str, Any]) -> 'ModelConfig':
+        """Creates model config from a dictionary."""
+
+        return cls(**config)
 
 
 class AudioResolutionEnhancer(keras.Model):
@@ -57,29 +70,27 @@ class AudioResolutionEnhancer(keras.Model):
             name=f'{self.name}/AdditiveResidual')
 
         self._final_conv = keras.layers.Conv1D(
-            filters=2, kernel_size=9, padding='same',
+            filters=self.upsampling_ratio, kernel_size=9, padding='same',
             name=f'{self.name}/FinalConv1D')
 
         self._final_shuffling = subpixel.SubPixelShufflingLayer1D(
-            2, name=f'{self.name}/FinalSubPixel1D')
+            self.upsampling_ratio, name=f'{self.name}/FinalSubPixel1D')
 
     @property
-    def upsampling_ratio(self) -> float:
-        return self._config.target_sampling_rate / self._config.source_sampling_rate
+    def upsampling_ratio(self) -> int:
+        return self._config.target_sampling_rate // self._config.source_sampling_rate
 
     def build(self, input_shape: tf.TensorShape):
         """Overrides keras.Model build method.
-
-        The `input_shape` is expected not to have the batch size dimension.
 
         Raises:
             ValueError: If the input shape does not match the expected one.
         """
 
-        if input_shape.ndims != 2 or input_shape[-1] != 1:
-            raise ValueError('Input shape must be (input_samples_len, 1).')
+        if len(input_shape) != 3 or input_shape[-1] != 1:
+            raise ValueError('Input shape must be (None, input_samples_len, 1).')
 
-        super().build((None,) + input_shape)
+        super().build(input_shape)
 
     def call(self, inputs: tf.Tensor, *args, **kwargs) -> tf.Tensor:
         """Overrides keras.Model call method."""
@@ -94,6 +105,28 @@ class AudioResolutionEnhancer(keras.Model):
         upsampling_concatenated = self._upsampling_outputs_concat([upsampling_output, inputs])
         upsampling_convoluted = self._final_conv(upsampling_concatenated, *args, **kwargs)
         return self._final_shuffling(upsampling_convoluted, *args, **kwargs)
+
+    def get_config(self) -> Dict[str, Any]:
+        """Overrides keras.Model get_config method."""
+
+        base_config = super().get_config()
+
+        config = {
+            "config": keras.saving.serialize_keras_object(self._config)
+        }
+
+        return {**base_config, **config}
+
+    @classmethod
+    def from_config(cls, config: Dict[str, Any], custom_objects=None) -> 'AudioResolutionEnhancer':
+        """Overrides keras.Model from_config method."""
+
+        if 'config' not in config:
+            raise ValueError('Deserialization config should contain "config" field!')
+
+        model_config = keras.saving.deserialize_keras_object(config.pop('config'))
+
+        return cls(model_config, **config)
 
     def _validate_config(self):
         """Validate model configuration.
@@ -119,6 +152,9 @@ class AudioResolutionEnhancer(keras.Model):
 
         if self._config.leaky_relu_alpha < 0:
             raise ValueError('Leaky ReLU alpha must be non-negative!')
+
+        if self._config.target_sampling_rate % self._config.source_sampling_rate != 0:
+            raise ValueError('Target sampling rate must be a multiple of source sampling rate!')
 
     def _make_downsampling_blocks(self) -> List[d_block.DownSamplingBlock]:
         """Makes downsampling section of the model's architecture.
@@ -162,7 +198,7 @@ class AudioResolutionEnhancer(keras.Model):
 
         created_blocks: List[u_block.UpSamplingBlock] = []
 
-        for block_num in range(self._config.n_internal_blocks):
+        for block_num in range(1, self._config.n_internal_blocks + 1):
 
             filters = max(2 ** (7 + (self._config.n_internal_blocks - block_num + 1)), 512)
             length = min(2 ** (7 - (self._config.n_internal_blocks - block_num + 1)) + 1, 9)
