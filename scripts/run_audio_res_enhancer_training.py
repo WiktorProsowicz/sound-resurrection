@@ -148,8 +148,6 @@ def main(arguments: argparse.Namespace):
 
     model.summary(line_length=120, print_fn=lambda x: _logger().debug(x))
 
-    keras.utils.plot_model(model, "audio_res_enhancer.png", show_shapes=True)
-
     dataset_gen = _build_dataset_generator(config)
 
     train_ds, test_ds = dataset_gen.generate_dataset(
@@ -159,7 +157,7 @@ def main(arguments: argparse.Namespace):
 
         checkpoint_template = os.path.join(
             config['model_checkpoints_path'],
-            "ckpt-{epoch:02d}-{ loss:.2f}.model.keras")
+            "ckpt-{epoch:02d}-{loss:.10f}.model.keras")
 
         training_callbacks = [
             keras.callbacks.ModelCheckpoint(checkpoint_template, save_freq='epoch',
@@ -188,7 +186,7 @@ if __name__ == '__main__':
 
     for gpu in gpus:
         tf.config.set_logical_device_configuration(gpu, [
-            tf.config.LogicalDeviceConfiguration(memory_limit=1024 * 4)
+            tf.config.LogicalDeviceConfiguration(memory_limit=1024 * 3)
         ])
 
     logging_utils.setup_logging()

@@ -13,7 +13,7 @@ dataset_generator:
     low_quality_path: ""
     inputs_length: 40000
     targets_length: 160000
-    batch_size: 1
+    batch_size: 3
 
   train_size: 0.8
 
@@ -55,4 +55,4 @@ checkpoint_period: 2
 
 # Configuration of the training process.
 training:
-  epochs: 4
+  epochs: 50
