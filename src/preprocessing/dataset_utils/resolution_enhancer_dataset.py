@@ -57,9 +57,11 @@ class ResolutionEnhancerDatasetGenerator:
             self._params.low_quality_path, self._params.inputs_length)
 
         dataset = tf.data.Dataset.zip((low_quality_dataset, high_quality_dataset))
-        dataset = dataset.shuffle(1000).batch(self._params.batch_size)
+        dataset = dataset.shuffle(32).batch(self._params.batch_size)
 
-        return keras.utils.split_dataset(dataset, train_size)
+        train_items = int(train_size * len(dataset))
+
+        return dataset.take(train_items), dataset.skip(train_items)
 
     def _check_dataset_compatibility(self):
         """Checks if the file sets in high and low-quality directories are compatible.
@@ -112,6 +114,6 @@ class ResolutionEnhancerDatasetGenerator:
             A tf.data.Dataset object where each item is a decoded WAV file tensor.
         """
 
-        files = tf.data.Dataset.list_files(os.path.join(directory, '*.wav'))
+        files = tf.data.Dataset.list_files(os.path.join(directory, '*.wav'), shuffle=False)
 
         return files.map(lambda path: self._decode_wav(path, n_samples))
