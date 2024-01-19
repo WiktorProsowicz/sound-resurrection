@@ -161,6 +161,6 @@ class MelBasedCoModulator(keras.layers.Layer):
             for idx in range(self._params.encoder_depth)
         ]
 
-        blocks.append(keras.layers.Flatten())
+        flatten = [keras.layers.Flatten(name=f'{self.name}/Encoder/Flatten')]
 
-        return list(itertools.chain(*blocks))
+        return list(itertools.chain(*blocks)) + flatten

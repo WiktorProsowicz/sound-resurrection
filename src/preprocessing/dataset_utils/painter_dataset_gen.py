@@ -15,6 +15,7 @@ class GeneratorParams:
 
     defective_path: str
     normal_path: str
+    samples_per_file: int
     batch_size: int
 
 
@@ -66,8 +67,10 @@ class SoundPainterDatasetGenerator:
             Tuple with spectrogram and phase to be used as input for the generator.
         """
 
-        signal, sr = librosa.load(path, sr=None)
-        stft = librosa.stft(signal, n_fft=1024, hop_length=256)
+        signal, sr = librosa.load(path, sr=None, mono=True)
+        signal = signal[:self._params.samples_per_file]
+
+        stft = librosa.stft(signal, n_fft=1024, hop_length=512)
 
         spectrogram = tf.abs(stft)
         mel_spec = librosa.feature.melspectrogram(S=spectrogram, sr=sr)
@@ -84,18 +87,13 @@ class SoundPainterDatasetGenerator:
             path: Path to the file.
 
         Returns:
-            Tensor in shape (frequency, time, 2) containing spectrogram
+            Tensor in shape (frequency, time, 2) containing MEL spectrogram
             with phase coefficients.
         """
 
-        signal, _ = librosa.load(path, sr=None)
-        stft = librosa.stft(signal, n_fft=1024, hop_length=256)
+        spec, phase = self._read_generator_input(path)
 
-        spectrogram = tf.abs(stft)
-        phase = tf.math.angle(stft)
-
-        return tf.stack((tf.expand_dims(spectrogram, axis=2),
-                        tf.expand_dims(phase, axis=2)), axis=2)
+        return tf.stack((spec, phase), axis=2)
 
     def _map_directory(self, path: str, mapping_func: Callable[[str], Any]) -> tf.data.Dataset:
         """Maps a directory containing wave files to a dataset.

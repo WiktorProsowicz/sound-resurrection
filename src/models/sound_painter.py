@@ -93,8 +93,6 @@ class SoundPainter(keras.Model):
         self._generator = self._make_generator()
         self._discriminator = self._make_discriminator()
 
-        super().build(spectrogram_shape)
-
     def compile(self,
                 gen_optimizer: keras.optimizers.Optimizer,
                 dis_optimizer: keras.optimizers.Optimizer,

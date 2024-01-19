@@ -33,6 +33,7 @@ dataset_generator:
   params:
     defective_path: ""
     normal_path: ""
+    samples_per_file: 163840
     batch_size: 2
 
   train_size: 0.8

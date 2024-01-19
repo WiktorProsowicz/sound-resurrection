@@ -108,6 +108,12 @@ def _build_model(config: Dict[str, Any]) -> sound_painter.SoundPainter:
     model_params = sound_painter.SoundPainterParams(**config['model']['params'])
     model = sound_painter.SoundPainter(model_params)
 
+    input_shape = tf.TensorShape((config['dataset_generator']['params']['batch_size'],
+                                  config['model']['shape_freq'],
+                                  config['model']['shape_time'], 1))
+
+    model.build((input_shape, input_shape))
+
     return model
 
 
@@ -166,5 +172,7 @@ if __name__ == "__main__":
         tf.config.set_logical_device_configuration(gpu, [
             tf.config.LogicalDeviceConfiguration(memory_limit=1024 * 3)
         ])
+
+    logging.getLogger('numba').setLevel(logging.WARNING)
 
     main(args)
