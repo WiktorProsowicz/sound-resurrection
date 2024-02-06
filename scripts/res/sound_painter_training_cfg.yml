@@ -1,0 +1,70 @@
+# ---------------------------------------------------------------------------
+# This file contains an template for configuration file specifying parameters
+# for the training process of SoundPainter model. The file serves
+# as a reference for run_sound_painter_training.py script input.
+# ---------------------------------------------------------------------------
+
+# Configuration of the
+
+# Configuration of the sound_painter.SoundPainter.
+model:
+  # Compatible with sound_painter.SoundPainterParams.
+  params:
+    latent_size: 64
+    n_generator_blocks: 8
+    n_generator_cond_blocks: 4
+    n_discriminator_blocks: 6
+    latent_mapping_depth: 4
+
+    generator_loss_coeffs:
+      contextual: 0.1
+      gradient: 0.9
+      wasserstein: 0.5
+
+    discriminator_loss_coeffs:
+      grad_penalty: 10.0
+      wasserstein: 0.5
+
+
+# Configuration of the painter_dataset_gen.SoundPainterDatasetGenerator.
+dataset_generator:
+
+  # Compatible with painter_dataset_gen.GeneratorParams.
+  params:
+    defective_path: ""
+    normal_path: ""
+    samples_per_file: 163840
+    batch_size: 2
+
+  train_size: 0.8
+
+
+# Contains elements that shall be used in model's `compile` method.
+compilation:
+
+  # Shall be passed to the keras.optimizers.deserialize function.
+  generator_optimizer:
+    class_name: "Adam"
+    config:
+      lr: 0.0003
+      beta_1: 0.9
+      beta_2: 0.999
+      epsilon: 0.00000001
+
+  # Shall be passed to the keras.optimizers.deserialize function.
+  discriminator_optimizer:
+    class_name: "Adam"
+    config:
+      lr: 0.0003
+      beta_1: 0.9
+      beta_2: 0.999
+      epsilon: 0.00000001
+
+# Path containing the saved model instances.
+model_checkpoints_path: ""
+# Checkpoint shall be made after each `checkpoint_period` epochs.
+checkpoint_period: 2
+
+# Configuration of the training process.
+training:
+  epochs: 50
