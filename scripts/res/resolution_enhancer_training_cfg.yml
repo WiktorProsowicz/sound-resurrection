@@ -1,0 +1,58 @@
+# ---------------------------------------------------------------------------
+# This file contains an template for configuration file specifying parameters
+# for the training process of AudioResolutionEnhancer model. The file serves
+# as a reference for run_audio_res_enhancer_training.py script input.
+# ---------------------------------------------------------------------------
+
+# Configuration of the resolution_enhancer_dataset.ResolutionEnhancerDatasetGenerator class.
+dataset_generator:
+
+  # Compatible with resolution_enhancer_dataset.GeneratorParams.
+  params:
+    high_quality_path: ""
+    low_quality_path: ""
+    inputs_length: 40000
+    targets_length: 160000
+    batch_size: 3
+
+  train_size: 0.8
+
+
+# Configuration of the audio_resolution_enhancer.AudioResolutionEnhancer class.
+model:
+
+  # Compatible with audio_resolution_enhancer.ModelConfig.
+  config:
+    source_sampling_rate: 10000
+    target_sampling_rate: 40000
+    n_internal_blocks: 4
+    dropout_rate: .5
+    leaky_relu_alpha: .2
+
+# Contains configuration of calling the model's `compile` method.
+compilation:
+
+  # Shall be passed to the keras.optimizers.deserialize function.
+  optimizer:
+    class_name: "Adam"
+    config:
+      lr: 0.0001
+      beta_1: 0.9
+      beta_2: 0.999
+      epsilon: 0.00000001
+
+  # Shall be passed to the keras.losses.deserialize function.
+  loss: "mean_squared_error"
+
+  metrics:
+    # Shall be passed to the keras.metrics.deserialize function.
+    - class_name: "RootMeanSquaredError"
+
+# Path containing the saved model instances.
+model_checkpoints_path: ""
+# Checkpoint shall be made after each `checkpoint_period` epochs.
+checkpoint_period: 2
+
+# Configuration of the training process.
+training:
+  epochs: 50

@@ -74,3 +74,9 @@ python3 setup.py run_unit_tests
 ```bash
 code --install-extension EditorConfig.EditorConfig
 ```
+
+## Running training
+
+The training data is available at [datashare.ed.ac.uk](https://datashare.ed.ac.uk/handle/10283/2651). The VCTK is a free data set containing short speech samples varying mainly in gender and accent.
+
+To set up the workspace before training follow the above [guide](#how-to-use). Training a specific model involves running a script from the `scripts` folder. For each such executable file there should be provided an external config with comments describing its contents and purpose of each part.
